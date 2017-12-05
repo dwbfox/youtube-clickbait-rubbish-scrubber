@@ -11,9 +11,24 @@
     'use strict';
 
     var settings = {
+        // Highlights videos with red to make it easier to avoid
         markVideos: true,
+
+        // Remove the videos from the listing altogether
         hideVideos: false,
-        markingTag: '[Rubbish]',
+
+        // Number of seconds to delay before hiding the video
+        hideVideoDelay: 1.5,
+
+        /**
+         * The annoyances we want to look for in the
+         * video listing. Remove or add as necessary. 
+         * A corresponding object is fetched below this 
+         * in order to get the pattern to be used to 
+         * match the video and the tag to mark the video with
+         * if there's a match.
+         * @type {Array}
+         */
         annoyancesBlocked: [
             'vlogs',
             'compilations',
@@ -22,14 +37,24 @@
             'clickbaits'
         ],
 
+        /**
+         * Targets general annoyances, videos with all caps
+         * in the title, annoying emojis or unicode 
+         * @type {Object}
+         */
         generalRubbish: {
             tag: '[Just Rubbish]',
             patterns: [
-                /^[\W]+$/g,
+                /★{2,}/,
                 /^[A-Z\s0-9\(\)\!-_]+$/
             ]
         },
 
+
+        /**
+         * Targets reaction videos.
+         * @type {Object}
+         */
         reactions: {
             tag: '[Reaction Rubbish]',
             patterns: [
@@ -40,17 +65,29 @@
             ]
         },
 
+
+        /**
+         * Targets clickbaits with 
+         * over-the-top titles
+         * @type {Object}
+         */
         clickbaits: {
             tag: '[Clickbait]',
             patterns: [
                 /top \d+/i,
                 /ultimate .+/i,
                 /\d+.*gone.*/i,
-                /the most/i,
+                /the (most|worst|best|greatest|least)/i,
                 /fail wins/i
             ]
         },
 
+
+        /**
+         * Targets countdowns, "best-of's", and
+         * general compilation videos
+         * @type {Object}
+         */
         compilations: {
             tag: '[Compilation Rubbish]',
             patterns: [
@@ -71,6 +108,13 @@
     };
 
 
+    /**
+     * Checks to see if the video contains any
+     * matches from the settings object
+     * 
+     * @param  {object} video dom element
+     * @return {Boolean}
+     */
     var isAnnoyance = function(video) {
         var title = video.getAttribute('title');
         settings.annoyancesBlocked.forEach(function(annoyance) {
@@ -84,6 +128,14 @@
         });
     };
 
+
+    /**
+     * Checks to see if the specified video is deemed annoying
+     * via the isAnnoynance() method invoked in this function. 
+     * If so, then the video marked with red and tagged
+     * @param  {object}
+     * @return {void}
+     */
     var checkVideoForAnnoyance = function(video_title) {
         var video_parent;
         try {
@@ -94,7 +146,13 @@
             video_parent = video_title.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
             video_title.setAttribute('style', 'background: red; padding: 3px; border-radius: 2.5px; color: white;');
             video_title.innerText = e.message + ' ' + video_title.innerText;
-            //video_parent.remove(); // soon...
+
+            if (setitngs.hideVideos === true) {
+                // delay the hiding to let the user know our intentions
+                setTimeout(function() {
+                    video_parent.remove();
+                }, settings.hideVideoDelay * 1000);
+            }
         }
     };
 
