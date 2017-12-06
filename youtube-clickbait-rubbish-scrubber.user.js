@@ -62,9 +62,10 @@
         clickbaits: {
             tag: '[Clickbait]',
             patterns: [
+                /top \d+/i,
                 /ultimate .+/i,
-                /you won't believe.*/i
                 /\d+.*gone.*/i,
+                /\w\s(wtf|crazy|tv|movie|funny) moments/i,
                 /the (most|worst|best|greatest|least)/i,
                 /fail wins/i
             ]
@@ -78,7 +79,6 @@
             patterns: [
                 /compilation/i,
                 /best of/i,
-                /top \d+/i,
                 /videos[\s!#]*$/i,
                 /\d+\s*(best|worst|winning|losing|successfully|win)/i,
                 /^.*#\d+$/i
