@@ -11,24 +11,21 @@
     'use strict';
 
     var settings = {
-        // Highlights videos with red to make it easier to avoid
+        /* Highlights videos with red to make it easier to avoid */
         markVideos: true,
 
-        // Remove the videos from the listing altogether
+        /* Remove the videos from the listing altogether */
         hideVideos: false,
 
-        // Number of seconds to delay before hiding the video
+        /* Number of seconds to delay before hiding the video */
         hideVideoDelay: 1.5,
 
-        /**
-         * The annoyances we want to look for in the
-         * video listing. Remove or add as necessary. 
-         * A corresponding object is fetched below this 
-         * in order to get the pattern to be used to 
-         * match the video and the tag to mark the video with
-         * if there's a match.
-         * @type {Array}
-         */
+         /* The annoyances we want to look for in the*/
+         /* video listing. Remove or add as necessary. */
+         /* A corresponding object is fetched below this */
+         /* in order to get the pattern to be used to */
+         /* match the video and the tag to mark the video with*/
+         /* if there's a match.*/
         annoyancesBlocked: [
             'vlogs',
             'compilations',
@@ -37,11 +34,8 @@
             'clickbaits'
         ],
 
-        /**
-         * Targets general annoyances, videos with all caps
-         * in the title, annoying emojis or unicode 
-         * @type {Object}
-         */
+         /* Targets general annoyances, videos with all caps */
+         /* in the title, annoying emojis or unicode  */
         generalRubbish: {
             tag: '[Just Rubbish]',
             patterns: [
@@ -51,10 +45,7 @@
         },
 
 
-        /**
-         * Targets reaction videos.
-         * @type {Object}
-         */
+        /* Targets reaction videos.*/
         reactions: {
             tag: '[Reaction Rubbish]',
             patterns: [
@@ -66,16 +57,13 @@
         },
 
 
-        /**
-         * Targets clickbaits with 
-         * over-the-top titles
-         * @type {Object}
-         */
+         /* Targets clickbaits with  */
+         /* over-the-top titles */
         clickbaits: {
             tag: '[Clickbait]',
             patterns: [
-                /top \d+/i,
                 /ultimate .+/i,
+                /you won't believe.*/i
                 /\d+.*gone.*/i,
                 /the (most|worst|best|greatest|least)/i,
                 /fail wins/i
@@ -83,16 +71,14 @@
         },
 
 
-        /**
-         * Targets countdowns, "best-of's", and
-         * general compilation videos
-         * @type {Object}
-         */
+        /* Targets countdowns, "best-of's", and */
+        /* general compilation videos */
         compilations: {
             tag: '[Compilation Rubbish]',
             patterns: [
                 /compilation/i,
                 /best of/i,
+                /top \d+/i,
                 /videos[\s!#]*$/i,
                 /\d+\s*(best|worst|winning|losing|successfully|win)/i,
                 /^.*#\d+$/i
