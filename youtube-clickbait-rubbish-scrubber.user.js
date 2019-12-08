@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         YouTube Clickbait Rubbish Scrubber
 // @namespace    http://dbiru.com/
-// @version      0.1
+// @version      0.2
 // @description  I'm just so tired of this Rubbish. For now, this script simply marks offending, clickbaity videos with an identifier so you can be on your way.
 // @author       dbiru
 // @match        https://www.youtube.com/*
@@ -18,7 +18,7 @@
         hideVideos: false,
 
         /* Number of seconds to delay before hiding the video */
-        hideVideoDelay: 1.5,
+        hideVideoDelay: .5,
 
          /* The annoyances we want to look for in the*/
          /* video listing. Remove or add as necessary. */
@@ -97,48 +97,64 @@
     /**
      * Checks to see if the video contains any
      * matches from the settings object
-     * 
+     *
      * @param  {object} video dom element
      * @return {Boolean}
      */
     var isAnnoyance = function(video) {
-        var title = video.getAttribute('title');
-        settings.annoyancesBlocked.forEach(function(annoyance) {
-            //console.info('Checking', title,'annoyance type: ' + annoyance);
-            settings[annoyance].patterns.forEach(function(clickbait) {
-                if (title.search(clickbait) !== -1) {
-                    //console.info('Matched', title, 'on ', settings[annoyance].patterns);
-                    throw new Error(settings[annoyance].tag);
-                }
+        try {
+            var title = video.getAttribute('title');
+            var has_annoyance = false;
+            settings.annoyancesBlocked.forEach(function(annoyance) {
+                //console.info('Checking', title,'annoyance type: ' + annoyance);
+                settings[annoyance].patterns.forEach(function(annoyance_pattern) {
+                    if (title.search(annoyance_pattern) !== -1) {
+                        has_annoyance = settings[annoyance].tag;
+                        return true;
+                    }
+                });
             });
-        });
+            return has_annoyance;
+        } catch (e) {
+            throw Error('isAnnoyance(): error when determining annoyance: ' +  e)
+        }
     };
 
 
     /**
      * Checks to see if the specified video is deemed annoying
-     * via the isAnnoynance() method invoked in this function. 
+     * via the isAnnoynance() method invoked in this function.
      * If so, then the video marked with red and tagged
      * @param  {object}
      * @return {void}
      */
     var checkVideoForAnnoyance = function(video_title) {
         var video_parent;
+        var annoyancevideo;
         try {
             if (video_title.getAttribute('data-marked') === null)
-                video_title.setAttribute('data-marked', 'true'); 
-                isAnnoyance(video_title);
-        } catch (e) {
+                video_title.setAttribute('data-marked', 'true');
+            annoyancevideo = isAnnoyance(video_title);
+
+            if (typeof annoyancevideo === 'undefined' || annoyancevideo === false) {
+                return false;
+            }
+
+            console.log(annoyancevideo, ' is an annoyance');
             video_parent = video_title.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
             video_title.setAttribute('style', 'background: red; padding: 3px; border-radius: 2.5px; color: white;');
-            video_title.innerText = e.message + ' ' + video_title.innerText;
+            video_title.innerText = annoyancevideo + ' ' + video_title.innerText;
 
-            if (setitngs.hideVideos === true) {
+            if (settings.hideVideos === true) {
                 // delay the hiding to let the user know our intentions
                 setTimeout(function() {
                     video_parent.remove();
                 }, settings.hideVideoDelay * 1000);
             }
+
+        } catch (e) {
+            console.warn('Error encountered when attempting to check for annoyance', e);
+            return false;
         }
     };
 
